@@ -1,0 +1,6 @@
+[psql]
+    dbname = "jayoak"
+    host   = "localhost"
+    user   = "jayoak"
+    pass   = "jayoak"
+    sslmode= "disable"

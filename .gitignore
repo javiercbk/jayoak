@@ -1,0 +1,4 @@
+# exclude everything volatile folder
+testdata/volatile/*
+postgres/data
+./server
