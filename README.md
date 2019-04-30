@@ -37,7 +37,7 @@ go test ./...
 - [x] (Backend) Given a wav file, calculate the sound spectrum.
 - [x] (Backend) Benchmark if a Postgres array type stores the frequencies faster that storing a single record for each frequency.
 - [x] (Backend) Start a docker container when running the application's test.
-- [ ] (Architecture) Define if redis is worth the trouble or not (probably not).
+- [x] (Architecture) Define if redis is worth the trouble or not (probably not).
 - [ ] (Architecture) Define if the array approach pays off when searching and reading frequencies.
 - [ ] (Backend) Authenticate a user.
 - [ ] (Backend) Implement access control.

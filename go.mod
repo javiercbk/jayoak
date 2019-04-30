@@ -21,8 +21,11 @@ require (
 	github.com/gotestyourself/gotestyourself v2.2.0+incompatible // indirect
 	github.com/javiercbk/filetype v1.0.9
 	github.com/json-iterator/go v1.1.6 // indirect
+	github.com/labstack/echo v3.3.10+incompatible // indirect
+	github.com/labstack/gommon v0.2.8 // indirect
 	github.com/leodido/go-urn v1.1.0 // indirect
 	github.com/lib/pq v1.0.0
+	github.com/mattn/go-colorable v0.1.1 // indirect
 	github.com/mattn/go-isatty v0.0.7 // indirect
 	github.com/opencontainers/go-digest v1.0.0-rc1 // indirect
 	github.com/opencontainers/image-spec v1.0.1 // indirect
@@ -34,6 +37,7 @@ require (
 	github.com/spf13/cast v1.3.0 // indirect
 	github.com/stretchr/testify v1.3.0 // indirect
 	github.com/ugorji/go/codec v0.0.0-20190320090025-2dc34c0b8780 // indirect
+	github.com/valyala/fasttemplate v1.0.1 // indirect
 	github.com/volatiletech/inflect v0.0.0-20170731032912-e7201282ae8d // indirect
 	github.com/volatiletech/null v8.0.0+incompatible
 	github.com/volatiletech/sqlboiler v3.2.0+incompatible

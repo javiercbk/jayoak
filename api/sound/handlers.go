@@ -303,7 +303,7 @@ func (h *Handlers) processSound(userID, instrumentID, soundUUID, extension strin
 	if disableForeignKey {
 		fmt.Fprintf(&bigInsert, "\nALTER TABLE frequencies ENABLE TRIGGER ALL;")
 	}
-	result, err := queries.Raw(bigInsert.String()).Exec(h.db)
+	result, err := queries.Raw(bigInsert.String()).ExecContext(ctx, h.db)
 	if err != nil {
 		h.logger.Printf("error inserting all frequencies for sound %s: %s\n", soundUUID, err)
 		return err

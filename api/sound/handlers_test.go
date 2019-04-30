@@ -2,12 +2,21 @@ package sound
 
 import (
 	"context"
+	"database/sql"
+	"fmt"
 	"mime/multipart"
 	"os"
+	"strings"
 	"testing"
 
+	"github.com/ericlagergren/decimal"
+	"github.com/javiercbk/jayoak/api/sound/spectrum"
 	"github.com/javiercbk/jayoak/models"
+	"github.com/volatiletech/null"
 	"github.com/volatiletech/sqlboiler/boil"
+	"github.com/volatiletech/sqlboiler/queries"
+	"github.com/volatiletech/sqlboiler/queries/qm"
+	"github.com/volatiletech/sqlboiler/types"
 
 	"github.com/javiercbk/jayoak/http/session"
 	testHelper "github.com/javiercbk/jayoak/testing"
@@ -99,6 +108,66 @@ func testProcessSoundStrategy(ctx context.Context, t testing.TB, h *Handlers, us
 	return sound.ID
 }
 
+func addFrequenciesArray(ctx context.Context, db *sql.DB, soundID int64, freqAnalysis spectrum.FrequenciesAnalysis) error {
+	decimalArr := make(types.DecimalArray, len(freqAnalysis.Spectrum))
+	for i, v := range freqAnalysis.Spectrum {
+		d := decimal.New(0, 0)
+		d.SetFloat64(v)
+		decimalArr[i] = types.Decimal{Big: d}
+	}
+	updateCols := models.M{
+		models.SoundColumns.MaxFrequency:   null.IntFrom(freqAnalysis.MaxFreq),
+		models.SoundColumns.MinFrequency:   null.IntFrom(freqAnalysis.MinFreq),
+		models.SoundColumns.MaxPowerFreq:   null.IntFrom(freqAnalysis.MaxPower.Freq),
+		models.SoundColumns.MaxPowerValue:  null.Float64From(freqAnalysis.MaxPower.Value),
+		models.SoundColumns.FrequenciesArr: decimalArr,
+	}
+	_, err := models.Sounds(qm.Where("id = ?", soundID)).UpdateAll(ctx, db, updateCols)
+	return err
+}
+
+func addFrequenciesRows(ctx context.Context, db *sql.DB, soundID int64, freqAnalysis spectrum.FrequenciesAnalysis) error {
+	var bigInsert strings.Builder
+	updateCols := models.M{
+		models.SoundColumns.MaxFrequency:  null.IntFrom(freqAnalysis.MaxFreq),
+		models.SoundColumns.MinFrequency:  null.IntFrom(freqAnalysis.MinFreq),
+		models.SoundColumns.MaxPowerFreq:  null.IntFrom(freqAnalysis.MaxPower.Freq),
+		models.SoundColumns.MaxPowerValue: null.Float64From(freqAnalysis.MaxPower.Value),
+	}
+	_, err := models.Sounds(qm.Where("id = ?", soundID)).UpdateAll(ctx, db, updateCols)
+	if err != nil {
+		return err
+	}
+	fmt.Fprintf(&bigInsert, "INSERT INTO frequencies (sound_id, frequency, spl) VALUES ")
+	first := true
+	for freq, val := range freqAnalysis.Spectrum {
+		if first {
+			first = false
+		} else {
+			bigInsert.WriteString(",")
+		}
+		fmt.Fprintf(&bigInsert, "(%d, %d, %f)", soundID, freq, val)
+	}
+	bigInsert.WriteString(";")
+	_, err = queries.Raw(bigInsert.String()).ExecContext(ctx, db)
+	return err
+}
+
+func createTestSound() error {
+	updateCols := models.M{
+		models.SoundColumns.MaxFrequency:   null.IntFrom(freqAnalysis.MaxFreq),
+		models.SoundColumns.MinFrequency:   null.IntFrom(freqAnalysis.MinFreq),
+		models.SoundColumns.MaxPowerFreq:   null.IntFrom(freqAnalysis.MaxPower.Freq),
+		models.SoundColumns.MaxPowerValue:  null.Float64From(freqAnalysis.MaxPower.Value),
+		models.SoundColumns.FrequenciesArr: decimalArr,
+	}
+	rowsAff, err := models.Sounds(qm.Where("id = ?", soundID)).UpdateAll(ctx, h.db, updateCols)
+	if err != nil {
+		h.logger.Printf("error updating sound %s: %s\n", soundUUID, err)
+		return err
+	}
+}
+
 func TestProcessSound(t *testing.T) {
 	ctx := context.Background()
 	h, user, err := setUp(ctx)
@@ -169,4 +238,15 @@ func BenchmarkProcessSoundArray(b *testing.B) {
 	for n := 0; n < b.N; n++ {
 		testProcessSoundStrategy(ctx, b, h, user, h.ProcessSoundArray)
 	}
+}
+
+func BenchmarkFindFrequencies(b *testing.B) {
+	ctx := context.Background()
+	h, user, err := setUp(ctx)
+	if err != nil {
+		b.Fatalf("error setting up test: %s\n", err)
+	}
+	testProcessSoundStrategy(ctx, b, h, user, h.ProcessSound)
+	b.ResetTimer()
+
 }
