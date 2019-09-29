@@ -17,7 +17,6 @@ import (
 	"github.com/volatiletech/sqlboiler/boil"
 	"github.com/volatiletech/sqlboiler/queries"
 	"github.com/volatiletech/sqlboiler/queries/qm"
-	"github.com/volatiletech/sqlboiler/queries/qmhelper"
 	"github.com/volatiletech/sqlboiler/strmangle"
 	"github.com/volatiletech/sqlboiler/types"
 )
@@ -42,59 +41,6 @@ var FrequencyColumns = struct {
 	SoundID:   "sound_id",
 	Frequency: "frequency",
 	SPL:       "spl",
-}
-
-// Generated where
-
-type whereHelperint64 struct{ field string }
-
-func (w whereHelperint64) EQ(x int64) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.EQ, x) }
-func (w whereHelperint64) NEQ(x int64) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.NEQ, x) }
-func (w whereHelperint64) LT(x int64) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.LT, x) }
-func (w whereHelperint64) LTE(x int64) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.LTE, x) }
-func (w whereHelperint64) GT(x int64) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.GT, x) }
-func (w whereHelperint64) GTE(x int64) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.GTE, x) }
-
-type whereHelperint struct{ field string }
-
-func (w whereHelperint) EQ(x int) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.EQ, x) }
-func (w whereHelperint) NEQ(x int) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.NEQ, x) }
-func (w whereHelperint) LT(x int) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.LT, x) }
-func (w whereHelperint) LTE(x int) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.LTE, x) }
-func (w whereHelperint) GT(x int) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.GT, x) }
-func (w whereHelperint) GTE(x int) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.GTE, x) }
-
-type whereHelpertypes_Decimal struct{ field string }
-
-func (w whereHelpertypes_Decimal) EQ(x types.Decimal) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.EQ, x)
-}
-func (w whereHelpertypes_Decimal) NEQ(x types.Decimal) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.NEQ, x)
-}
-func (w whereHelpertypes_Decimal) LT(x types.Decimal) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.LT, x)
-}
-func (w whereHelpertypes_Decimal) LTE(x types.Decimal) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.LTE, x)
-}
-func (w whereHelpertypes_Decimal) GT(x types.Decimal) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.GT, x)
-}
-func (w whereHelpertypes_Decimal) GTE(x types.Decimal) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.GTE, x)
-}
-
-var FrequencyWhere = struct {
-	ID        whereHelperint64
-	SoundID   whereHelperint64
-	Frequency whereHelperint
-	SPL       whereHelpertypes_Decimal
-}{
-	ID:        whereHelperint64{field: `id`},
-	SoundID:   whereHelperint64{field: `sound_id`},
-	Frequency: whereHelperint{field: `frequency`},
-	SPL:       whereHelpertypes_Decimal{field: `spl`},
 }
 
 // FrequencyRels is where relationship names are stored.
@@ -152,9 +98,6 @@ var (
 var (
 	// Force time package dependency for automated UpdatedAt/CreatedAt.
 	_ = time.Second
-	// Force qmhelper dependency for where clause generation (which doesn't
-	// always happen)
-	_ = qmhelper.Where
 )
 
 var frequencyBeforeInsertHooks []FrequencyHook
@@ -170,10 +113,6 @@ var frequencyAfterUpsertHooks []FrequencyHook
 
 // doBeforeInsertHooks executes all "before insert" hooks.
 func (o *Frequency) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
 	for _, hook := range frequencyBeforeInsertHooks {
 		if err := hook(ctx, exec, o); err != nil {
 			return err
@@ -185,10 +124,6 @@ func (o *Frequency) doBeforeInsertHooks(ctx context.Context, exec boil.ContextEx
 
 // doBeforeUpdateHooks executes all "before Update" hooks.
 func (o *Frequency) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
 	for _, hook := range frequencyBeforeUpdateHooks {
 		if err := hook(ctx, exec, o); err != nil {
 			return err
@@ -200,10 +135,6 @@ func (o *Frequency) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextEx
 
 // doBeforeDeleteHooks executes all "before Delete" hooks.
 func (o *Frequency) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
 	for _, hook := range frequencyBeforeDeleteHooks {
 		if err := hook(ctx, exec, o); err != nil {
 			return err
@@ -215,10 +146,6 @@ func (o *Frequency) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextEx
 
 // doBeforeUpsertHooks executes all "before Upsert" hooks.
 func (o *Frequency) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
 	for _, hook := range frequencyBeforeUpsertHooks {
 		if err := hook(ctx, exec, o); err != nil {
 			return err
@@ -230,10 +157,6 @@ func (o *Frequency) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextEx
 
 // doAfterInsertHooks executes all "after Insert" hooks.
 func (o *Frequency) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
 	for _, hook := range frequencyAfterInsertHooks {
 		if err := hook(ctx, exec, o); err != nil {
 			return err
@@ -245,10 +168,6 @@ func (o *Frequency) doAfterInsertHooks(ctx context.Context, exec boil.ContextExe
 
 // doAfterSelectHooks executes all "after Select" hooks.
 func (o *Frequency) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
 	for _, hook := range frequencyAfterSelectHooks {
 		if err := hook(ctx, exec, o); err != nil {
 			return err
@@ -260,10 +179,6 @@ func (o *Frequency) doAfterSelectHooks(ctx context.Context, exec boil.ContextExe
 
 // doAfterUpdateHooks executes all "after Update" hooks.
 func (o *Frequency) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
 	for _, hook := range frequencyAfterUpdateHooks {
 		if err := hook(ctx, exec, o); err != nil {
 			return err
@@ -275,10 +190,6 @@ func (o *Frequency) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExe
 
 // doAfterDeleteHooks executes all "after Delete" hooks.
 func (o *Frequency) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
 	for _, hook := range frequencyAfterDeleteHooks {
 		if err := hook(ctx, exec, o); err != nil {
 			return err
@@ -290,10 +201,6 @@ func (o *Frequency) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExe
 
 // doAfterUpsertHooks executes all "after Upsert" hooks.
 func (o *Frequency) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
 	for _, hook := range frequencyAfterUpsertHooks {
 		if err := hook(ctx, exec, o); err != nil {
 			return err
@@ -448,10 +355,6 @@ func (frequencyL) LoadSound(ctx context.Context, e boil.ContextExecutor, singula
 			args = append(args, obj.SoundID)
 
 		}
-	}
-
-	if len(args) == 0 {
-		return nil
 	}
 
 	query := NewQuery(qm.From(`sounds`), qm.WhereIn(`id in ?`, args...))
@@ -858,7 +761,7 @@ func (o *Frequency) Upsert(ctx context.Context, exec boil.ContextExecutor, updat
 			frequencyPrimaryKeyColumns,
 		)
 
-		if updateOnConflict && len(update) == 0 {
+		if len(update) == 0 {
 			return errors.New("models: unable to upsert frequencies, could not build update column list")
 		}
 

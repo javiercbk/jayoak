@@ -113,7 +113,7 @@ func (h *Handlers) PostSound(c *gin.Context) {
 		return
 	}
 	pSound.FileFactory = file
-	sound, err := h.CreateSound(c, user, pSound, h.ProcessSoundArray)
+	sound, err := h.CreateSound(c, user, pSound, h.processSound)
 	if err != nil {
 		h.logger.Printf("error creating sound: %s\n", err)
 		response.NewErrorResponse(c, http.StatusBadRequest, "no sound file provided")
@@ -214,39 +214,6 @@ func (h *Handlers) ProcessSoundNoFK(userID, instrumentID, soundUUID, extension s
 	return h.processSound(userID, instrumentID, soundUUID, extension, soundID, false)
 }
 
-// ProcessSoundArray process the frequency spectrum and saves it to the sound array
-func (h *Handlers) ProcessSoundArray(userID, instrumentID, soundUUID, extension string, soundID int64) error {
-	ctx := context.Background()
-	freqAnalysis, err := h.analyzeFrequencies(userID, instrumentID, soundUUID, extension)
-	if err != nil {
-		h.logger.Printf("error building spectrum for wav file %s: %s\n", soundUUID, err)
-		return err
-	}
-	decimalArr := make(types.DecimalArray, len(freqAnalysis.Spectrum))
-	for i, v := range freqAnalysis.Spectrum {
-		d := decimal.New(0, 0)
-		d.SetFloat64(v)
-		decimalArr[i] = types.Decimal{Big: d}
-	}
-	updateCols := models.M{
-		models.SoundColumns.MaxFrequency:   null.IntFrom(freqAnalysis.MaxFreq),
-		models.SoundColumns.MinFrequency:   null.IntFrom(freqAnalysis.MinFreq),
-		models.SoundColumns.MaxPowerFreq:   null.IntFrom(freqAnalysis.MaxPower.Freq),
-		models.SoundColumns.MaxPowerValue:  null.Float64From(freqAnalysis.MaxPower.Value),
-		models.SoundColumns.FrequenciesArr: decimalArr,
-	}
-	rowsAff, err := models.Sounds(qm.Where("id = ?", soundID)).UpdateAll(ctx, h.db, updateCols)
-	if err != nil {
-		h.logger.Printf("error updating sound %s: %s\n", soundUUID, err)
-		return err
-	}
-	if rowsAff != 1 {
-		h.logger.Printf("unexpected rows affected count %d for sound %s\n", rowsAff, soundUUID)
-		return ErrUnexpectedRowsAffectedCount
-	}
-	return nil
-}
-
 func (h *Handlers) analyzeFrequencies(userID, instrumentID, soundUUID, extension string) (spectrum.FrequenciesAnalysis, error) {
 	var freqAnalysis spectrum.FrequenciesAnalysis
 	soundFile, err := h.repository.SoundFile(userID, instrumentID, soundUUID, extension, os.O_RDONLY)
@@ -263,6 +230,7 @@ func (h *Handlers) analyzeFrequencies(userID, instrumentID, soundUUID, extension
 	return spectrum.FrequenciesSpectrumAnalysis(pcm, sampleRate)
 }
 
+// processSound process a wav file and stores the frequencies in a separated table
 func (h *Handlers) processSound(userID, instrumentID, soundUUID, extension string, soundID int64, disableForeignKey bool) error {
 	ctx := context.Background()
 	freqAnalysis, err := h.analyzeFrequencies(userID, instrumentID, soundUUID, extension)

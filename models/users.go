@@ -18,7 +18,6 @@ import (
 	"github.com/volatiletech/sqlboiler/boil"
 	"github.com/volatiletech/sqlboiler/queries"
 	"github.com/volatiletech/sqlboiler/queries/qm"
-	"github.com/volatiletech/sqlboiler/queries/qmhelper"
 	"github.com/volatiletech/sqlboiler/strmangle"
 )
 
@@ -51,26 +50,6 @@ var UserColumns = struct {
 	OrganizationID: "organization_id",
 	CreatedAt:      "created_at",
 	UpdatedAt:      "updated_at",
-}
-
-// Generated where
-
-var UserWhere = struct {
-	ID             whereHelperint64
-	Name           whereHelperstring
-	Password       whereHelperstring
-	Email          whereHelperstring
-	OrganizationID whereHelperint64
-	CreatedAt      whereHelpernull_Time
-	UpdatedAt      whereHelpernull_Time
-}{
-	ID:             whereHelperint64{field: `id`},
-	Name:           whereHelperstring{field: `name`},
-	Password:       whereHelperstring{field: `password`},
-	Email:          whereHelperstring{field: `email`},
-	OrganizationID: whereHelperint64{field: `organization_id`},
-	CreatedAt:      whereHelpernull_Time{field: `created_at`},
-	UpdatedAt:      whereHelpernull_Time{field: `updated_at`},
 }
 
 // UserRels is where relationship names are stored.
@@ -134,9 +113,6 @@ var (
 var (
 	// Force time package dependency for automated UpdatedAt/CreatedAt.
 	_ = time.Second
-	// Force qmhelper dependency for where clause generation (which doesn't
-	// always happen)
-	_ = qmhelper.Where
 )
 
 var userBeforeInsertHooks []UserHook
@@ -152,10 +128,6 @@ var userAfterUpsertHooks []UserHook
 
 // doBeforeInsertHooks executes all "before insert" hooks.
 func (o *User) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
 	for _, hook := range userBeforeInsertHooks {
 		if err := hook(ctx, exec, o); err != nil {
 			return err
@@ -167,10 +139,6 @@ func (o *User) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecuto
 
 // doBeforeUpdateHooks executes all "before Update" hooks.
 func (o *User) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
 	for _, hook := range userBeforeUpdateHooks {
 		if err := hook(ctx, exec, o); err != nil {
 			return err
@@ -182,10 +150,6 @@ func (o *User) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecuto
 
 // doBeforeDeleteHooks executes all "before Delete" hooks.
 func (o *User) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
 	for _, hook := range userBeforeDeleteHooks {
 		if err := hook(ctx, exec, o); err != nil {
 			return err
@@ -197,10 +161,6 @@ func (o *User) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecuto
 
 // doBeforeUpsertHooks executes all "before Upsert" hooks.
 func (o *User) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
 	for _, hook := range userBeforeUpsertHooks {
 		if err := hook(ctx, exec, o); err != nil {
 			return err
@@ -212,10 +172,6 @@ func (o *User) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecuto
 
 // doAfterInsertHooks executes all "after Insert" hooks.
 func (o *User) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
 	for _, hook := range userAfterInsertHooks {
 		if err := hook(ctx, exec, o); err != nil {
 			return err
@@ -227,10 +183,6 @@ func (o *User) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor
 
 // doAfterSelectHooks executes all "after Select" hooks.
 func (o *User) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
 	for _, hook := range userAfterSelectHooks {
 		if err := hook(ctx, exec, o); err != nil {
 			return err
@@ -242,10 +194,6 @@ func (o *User) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor
 
 // doAfterUpdateHooks executes all "after Update" hooks.
 func (o *User) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
 	for _, hook := range userAfterUpdateHooks {
 		if err := hook(ctx, exec, o); err != nil {
 			return err
@@ -257,10 +205,6 @@ func (o *User) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor
 
 // doAfterDeleteHooks executes all "after Delete" hooks.
 func (o *User) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
 	for _, hook := range userAfterDeleteHooks {
 		if err := hook(ctx, exec, o); err != nil {
 			return err
@@ -272,10 +216,6 @@ func (o *User) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor
 
 // doAfterUpsertHooks executes all "after Upsert" hooks.
 func (o *User) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
 	for _, hook := range userAfterUpsertHooks {
 		if err := hook(ctx, exec, o); err != nil {
 			return err
@@ -474,10 +414,6 @@ func (userL) LoadOrganization(ctx context.Context, e boil.ContextExecutor, singu
 		}
 	}
 
-	if len(args) == 0 {
-		return nil
-	}
-
 	query := NewQuery(qm.From(`organizations`), qm.WhereIn(`id in ?`, args...))
 	if mods != nil {
 		mods.Apply(query)
@@ -573,10 +509,6 @@ func (userL) LoadCreatorInstruments(ctx context.Context, e boil.ContextExecutor,
 		}
 	}
 
-	if len(args) == 0 {
-		return nil
-	}
-
 	query := NewQuery(qm.From(`instruments`), qm.WhereIn(`creator_id in ?`, args...))
 	if mods != nil {
 		mods.Apply(query)
@@ -666,10 +598,6 @@ func (userL) LoadCreatorSounds(ctx context.Context, e boil.ContextExecutor, sing
 
 			args = append(args, obj.ID)
 		}
-	}
-
-	if len(args) == 0 {
-		return nil
 	}
 
 	query := NewQuery(qm.From(`sounds`), qm.WhereIn(`creator_id in ?`, args...))
@@ -921,15 +849,13 @@ func (o *User) Insert(ctx context.Context, exec boil.ContextExecutor, columns bo
 	}
 
 	var err error
-	if !boil.TimestampsAreSkipped(ctx) {
-		currTime := time.Now().In(boil.GetLocation())
+	currTime := time.Now().In(boil.GetLocation())
 
-		if queries.MustTime(o.CreatedAt).IsZero() {
-			queries.SetScanner(&o.CreatedAt, currTime)
-		}
-		if queries.MustTime(o.UpdatedAt).IsZero() {
-			queries.SetScanner(&o.UpdatedAt, currTime)
-		}
+	if queries.MustTime(o.CreatedAt).IsZero() {
+		queries.SetScanner(&o.CreatedAt, currTime)
+	}
+	if queries.MustTime(o.UpdatedAt).IsZero() {
+		queries.SetScanner(&o.UpdatedAt, currTime)
 	}
 
 	if err := o.doBeforeInsertHooks(ctx, exec); err != nil {
@@ -1005,11 +931,9 @@ func (o *User) Insert(ctx context.Context, exec boil.ContextExecutor, columns bo
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
 func (o *User) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
-	if !boil.TimestampsAreSkipped(ctx) {
-		currTime := time.Now().In(boil.GetLocation())
+	currTime := time.Now().In(boil.GetLocation())
 
-		queries.SetScanner(&o.UpdatedAt, currTime)
-	}
+	queries.SetScanner(&o.UpdatedAt, currTime)
 
 	var err error
 	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
@@ -1141,14 +1065,12 @@ func (o *User) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnCo
 	if o == nil {
 		return errors.New("models: no users provided for upsert")
 	}
-	if !boil.TimestampsAreSkipped(ctx) {
-		currTime := time.Now().In(boil.GetLocation())
+	currTime := time.Now().In(boil.GetLocation())
 
-		if queries.MustTime(o.CreatedAt).IsZero() {
-			queries.SetScanner(&o.CreatedAt, currTime)
-		}
-		queries.SetScanner(&o.UpdatedAt, currTime)
+	if queries.MustTime(o.CreatedAt).IsZero() {
+		queries.SetScanner(&o.CreatedAt, currTime)
 	}
+	queries.SetScanner(&o.UpdatedAt, currTime)
 
 	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
 		return err
@@ -1202,7 +1124,7 @@ func (o *User) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnCo
 			userPrimaryKeyColumns,
 		)
 
-		if updateOnConflict && len(update) == 0 {
+		if len(update) == 0 {
 			return errors.New("models: unable to upsert users, could not build update column list")
 		}
 

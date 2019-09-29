@@ -38,10 +38,10 @@ go test ./...
 - [x] (Backend) Benchmark if a Postgres array type stores the frequencies faster that storing a single record for each frequency.
 - [x] (Backend) Start a docker container when running the application's test.
 - [x] (Architecture) Define if redis is worth the trouble or not (probably not).
-- [ ] (Architecture) Define if the array approach pays off when searching and reading frequencies.
+- [x] (Architecture) Define if the array approach pays off when searching and reading frequencies.
 - [ ] (Backend) Authenticate a user.
 - [ ] (Backend) Implement access control.
-- [ ] (Frontend) Create the main frontend application skeleton with Vue.js
+- [ ] (Frontend) Create the main frontend application skeleton with Elm
 - [ ] (Frontend) Create the login page and logout logic.
 - [ ] (Frontend) Create the upload sound page.
 - [ ] (Frontend) Create the sound analysis and edition page.

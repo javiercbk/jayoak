@@ -34,3 +34,11 @@ version:
 # run the audio frequencies storage in DB benchmarks
 bench-sound:
 	go test -benchmem -run=^$ github.com/javiercbk/jayoak/sound -bench ^Benchmark.*$ -benchtime=20s
+
+frontend:
+	cd frontend
+	elm make src/Main.elm --output=dist/main.js
+
+frontend-prod:
+	cd frontend
+	./optimize.sh src/Main.elm

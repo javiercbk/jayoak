@@ -18,7 +18,6 @@ import (
 	"github.com/volatiletech/sqlboiler/boil"
 	"github.com/volatiletech/sqlboiler/queries"
 	"github.com/volatiletech/sqlboiler/queries/qm"
-	"github.com/volatiletech/sqlboiler/queries/qmhelper"
 	"github.com/volatiletech/sqlboiler/strmangle"
 )
 
@@ -42,20 +41,6 @@ var OrganizationColumns = struct {
 	Name:      "name",
 	CreatedAt: "created_at",
 	UpdatedAt: "updated_at",
-}
-
-// Generated where
-
-var OrganizationWhere = struct {
-	ID        whereHelperint64
-	Name      whereHelperstring
-	CreatedAt whereHelpernull_Time
-	UpdatedAt whereHelpernull_Time
-}{
-	ID:        whereHelperint64{field: `id`},
-	Name:      whereHelperstring{field: `name`},
-	CreatedAt: whereHelpernull_Time{field: `created_at`},
-	UpdatedAt: whereHelpernull_Time{field: `updated_at`},
 }
 
 // OrganizationRels is where relationship names are stored.
@@ -119,9 +104,6 @@ var (
 var (
 	// Force time package dependency for automated UpdatedAt/CreatedAt.
 	_ = time.Second
-	// Force qmhelper dependency for where clause generation (which doesn't
-	// always happen)
-	_ = qmhelper.Where
 )
 
 var organizationBeforeInsertHooks []OrganizationHook
@@ -137,10 +119,6 @@ var organizationAfterUpsertHooks []OrganizationHook
 
 // doBeforeInsertHooks executes all "before insert" hooks.
 func (o *Organization) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
 	for _, hook := range organizationBeforeInsertHooks {
 		if err := hook(ctx, exec, o); err != nil {
 			return err
@@ -152,10 +130,6 @@ func (o *Organization) doBeforeInsertHooks(ctx context.Context, exec boil.Contex
 
 // doBeforeUpdateHooks executes all "before Update" hooks.
 func (o *Organization) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
 	for _, hook := range organizationBeforeUpdateHooks {
 		if err := hook(ctx, exec, o); err != nil {
 			return err
@@ -167,10 +141,6 @@ func (o *Organization) doBeforeUpdateHooks(ctx context.Context, exec boil.Contex
 
 // doBeforeDeleteHooks executes all "before Delete" hooks.
 func (o *Organization) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
 	for _, hook := range organizationBeforeDeleteHooks {
 		if err := hook(ctx, exec, o); err != nil {
 			return err
@@ -182,10 +152,6 @@ func (o *Organization) doBeforeDeleteHooks(ctx context.Context, exec boil.Contex
 
 // doBeforeUpsertHooks executes all "before Upsert" hooks.
 func (o *Organization) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
 	for _, hook := range organizationBeforeUpsertHooks {
 		if err := hook(ctx, exec, o); err != nil {
 			return err
@@ -197,10 +163,6 @@ func (o *Organization) doBeforeUpsertHooks(ctx context.Context, exec boil.Contex
 
 // doAfterInsertHooks executes all "after Insert" hooks.
 func (o *Organization) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
 	for _, hook := range organizationAfterInsertHooks {
 		if err := hook(ctx, exec, o); err != nil {
 			return err
@@ -212,10 +174,6 @@ func (o *Organization) doAfterInsertHooks(ctx context.Context, exec boil.Context
 
 // doAfterSelectHooks executes all "after Select" hooks.
 func (o *Organization) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
 	for _, hook := range organizationAfterSelectHooks {
 		if err := hook(ctx, exec, o); err != nil {
 			return err
@@ -227,10 +185,6 @@ func (o *Organization) doAfterSelectHooks(ctx context.Context, exec boil.Context
 
 // doAfterUpdateHooks executes all "after Update" hooks.
 func (o *Organization) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
 	for _, hook := range organizationAfterUpdateHooks {
 		if err := hook(ctx, exec, o); err != nil {
 			return err
@@ -242,10 +196,6 @@ func (o *Organization) doAfterUpdateHooks(ctx context.Context, exec boil.Context
 
 // doAfterDeleteHooks executes all "after Delete" hooks.
 func (o *Organization) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
 	for _, hook := range organizationAfterDeleteHooks {
 		if err := hook(ctx, exec, o); err != nil {
 			return err
@@ -257,10 +207,6 @@ func (o *Organization) doAfterDeleteHooks(ctx context.Context, exec boil.Context
 
 // doAfterUpsertHooks executes all "after Upsert" hooks.
 func (o *Organization) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
 	for _, hook := range organizationAfterUpsertHooks {
 		if err := hook(ctx, exec, o); err != nil {
 			return err
@@ -464,10 +410,6 @@ func (organizationL) LoadInstruments(ctx context.Context, e boil.ContextExecutor
 		}
 	}
 
-	if len(args) == 0 {
-		return nil
-	}
-
 	query := NewQuery(qm.From(`instruments`), qm.WhereIn(`organization_id in ?`, args...))
 	if mods != nil {
 		mods.Apply(query)
@@ -559,10 +501,6 @@ func (organizationL) LoadSounds(ctx context.Context, e boil.ContextExecutor, sin
 		}
 	}
 
-	if len(args) == 0 {
-		return nil
-	}
-
 	query := NewQuery(qm.From(`sounds`), qm.WhereIn(`organization_id in ?`, args...))
 	if mods != nil {
 		mods.Apply(query)
@@ -652,10 +590,6 @@ func (organizationL) LoadUsers(ctx context.Context, e boil.ContextExecutor, sing
 
 			args = append(args, obj.ID)
 		}
-	}
-
-	if len(args) == 0 {
-		return nil
 	}
 
 	query := NewQuery(qm.From(`users`), qm.WhereIn(`organization_id in ?`, args...))
@@ -913,15 +847,13 @@ func (o *Organization) Insert(ctx context.Context, exec boil.ContextExecutor, co
 	}
 
 	var err error
-	if !boil.TimestampsAreSkipped(ctx) {
-		currTime := time.Now().In(boil.GetLocation())
+	currTime := time.Now().In(boil.GetLocation())
 
-		if queries.MustTime(o.CreatedAt).IsZero() {
-			queries.SetScanner(&o.CreatedAt, currTime)
-		}
-		if queries.MustTime(o.UpdatedAt).IsZero() {
-			queries.SetScanner(&o.UpdatedAt, currTime)
-		}
+	if queries.MustTime(o.CreatedAt).IsZero() {
+		queries.SetScanner(&o.CreatedAt, currTime)
+	}
+	if queries.MustTime(o.UpdatedAt).IsZero() {
+		queries.SetScanner(&o.UpdatedAt, currTime)
 	}
 
 	if err := o.doBeforeInsertHooks(ctx, exec); err != nil {
@@ -997,11 +929,9 @@ func (o *Organization) Insert(ctx context.Context, exec boil.ContextExecutor, co
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
 func (o *Organization) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
-	if !boil.TimestampsAreSkipped(ctx) {
-		currTime := time.Now().In(boil.GetLocation())
+	currTime := time.Now().In(boil.GetLocation())
 
-		queries.SetScanner(&o.UpdatedAt, currTime)
-	}
+	queries.SetScanner(&o.UpdatedAt, currTime)
 
 	var err error
 	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
@@ -1133,14 +1063,12 @@ func (o *Organization) Upsert(ctx context.Context, exec boil.ContextExecutor, up
 	if o == nil {
 		return errors.New("models: no organizations provided for upsert")
 	}
-	if !boil.TimestampsAreSkipped(ctx) {
-		currTime := time.Now().In(boil.GetLocation())
+	currTime := time.Now().In(boil.GetLocation())
 
-		if queries.MustTime(o.CreatedAt).IsZero() {
-			queries.SetScanner(&o.CreatedAt, currTime)
-		}
-		queries.SetScanner(&o.UpdatedAt, currTime)
+	if queries.MustTime(o.CreatedAt).IsZero() {
+		queries.SetScanner(&o.CreatedAt, currTime)
 	}
+	queries.SetScanner(&o.UpdatedAt, currTime)
 
 	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
 		return err
@@ -1194,7 +1122,7 @@ func (o *Organization) Upsert(ctx context.Context, exec boil.ContextExecutor, up
 			organizationPrimaryKeyColumns,
 		)
 
-		if updateOnConflict && len(update) == 0 {
+		if len(update) == 0 {
 			return errors.New("models: unable to upsert organizations, could not build update column list")
 		}
 

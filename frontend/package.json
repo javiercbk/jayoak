@@ -1,0 +1,24 @@
+{
+  "name": "jayoak-frontend",
+  "private": true,
+  "version": "1.0.0",
+  "description": "[Elm](https://elm-lang.org/) is a programming language that compiles to JavaScript. It is known for its friendly error messages, helping you find issues quickly and refactor large projects with confidence. Elm is also [very fast](https://elm-lang.org/blog/blazing-fast-html-round-two) and [very small](https://elm-lang.org/blog/small-assets-without-the-headache) when compared with React, Angular, Ember, etc.",
+  "main": "index.js",
+  "scripts": {
+    "start": "./node_modules/.bin/http-server -d False -i False",
+    "reactor": "./node_modules/.bin/elm reactor",
+    "make": "./node_modules/.bin/elm make src/Main.elm --output dist/elm.js",
+    "build": "./optimize.sh",
+    "test": "./node_modules/.bin/elm-test"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "elm": "^0.19.0-no-deps",
+    "elm-analyse": "^0.16.4",
+    "elm-format": "^0.8.2",
+    "elm-test": "^0.19.0-rev6",
+    "http-server": "^0.11.1",
+    "uglify-js": "^3.6.0"
+  }
+}

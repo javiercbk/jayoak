@@ -18,7 +18,6 @@ import (
 	"github.com/volatiletech/sqlboiler/boil"
 	"github.com/volatiletech/sqlboiler/queries"
 	"github.com/volatiletech/sqlboiler/queries/qm"
-	"github.com/volatiletech/sqlboiler/queries/qmhelper"
 	"github.com/volatiletech/sqlboiler/strmangle"
 )
 
@@ -48,56 +47,6 @@ var InstrumentColumns = struct {
 	CreatorID:      "creator_id",
 	CreatedAt:      "created_at",
 	UpdatedAt:      "updated_at",
-}
-
-// Generated where
-
-type whereHelperstring struct{ field string }
-
-func (w whereHelperstring) EQ(x string) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.EQ, x) }
-func (w whereHelperstring) NEQ(x string) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.NEQ, x) }
-func (w whereHelperstring) LT(x string) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.LT, x) }
-func (w whereHelperstring) LTE(x string) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.LTE, x) }
-func (w whereHelperstring) GT(x string) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.GT, x) }
-func (w whereHelperstring) GTE(x string) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.GTE, x) }
-
-type whereHelpernull_Time struct{ field string }
-
-func (w whereHelpernull_Time) EQ(x null.Time) qm.QueryMod {
-	return qmhelper.WhereNullEQ(w.field, false, x)
-}
-func (w whereHelpernull_Time) NEQ(x null.Time) qm.QueryMod {
-	return qmhelper.WhereNullEQ(w.field, true, x)
-}
-func (w whereHelpernull_Time) IsNull() qm.QueryMod    { return qmhelper.WhereIsNull(w.field) }
-func (w whereHelpernull_Time) IsNotNull() qm.QueryMod { return qmhelper.WhereIsNotNull(w.field) }
-func (w whereHelpernull_Time) LT(x null.Time) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.LT, x)
-}
-func (w whereHelpernull_Time) LTE(x null.Time) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.LTE, x)
-}
-func (w whereHelpernull_Time) GT(x null.Time) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.GT, x)
-}
-func (w whereHelpernull_Time) GTE(x null.Time) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.GTE, x)
-}
-
-var InstrumentWhere = struct {
-	ID             whereHelperint64
-	Name           whereHelperstring
-	OrganizationID whereHelperint64
-	CreatorID      whereHelperint64
-	CreatedAt      whereHelpernull_Time
-	UpdatedAt      whereHelpernull_Time
-}{
-	ID:             whereHelperint64{field: `id`},
-	Name:           whereHelperstring{field: `name`},
-	OrganizationID: whereHelperint64{field: `organization_id`},
-	CreatorID:      whereHelperint64{field: `creator_id`},
-	CreatedAt:      whereHelpernull_Time{field: `created_at`},
-	UpdatedAt:      whereHelpernull_Time{field: `updated_at`},
 }
 
 // InstrumentRels is where relationship names are stored.
@@ -161,9 +110,6 @@ var (
 var (
 	// Force time package dependency for automated UpdatedAt/CreatedAt.
 	_ = time.Second
-	// Force qmhelper dependency for where clause generation (which doesn't
-	// always happen)
-	_ = qmhelper.Where
 )
 
 var instrumentBeforeInsertHooks []InstrumentHook
@@ -179,10 +125,6 @@ var instrumentAfterUpsertHooks []InstrumentHook
 
 // doBeforeInsertHooks executes all "before insert" hooks.
 func (o *Instrument) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
 	for _, hook := range instrumentBeforeInsertHooks {
 		if err := hook(ctx, exec, o); err != nil {
 			return err
@@ -194,10 +136,6 @@ func (o *Instrument) doBeforeInsertHooks(ctx context.Context, exec boil.ContextE
 
 // doBeforeUpdateHooks executes all "before Update" hooks.
 func (o *Instrument) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
 	for _, hook := range instrumentBeforeUpdateHooks {
 		if err := hook(ctx, exec, o); err != nil {
 			return err
@@ -209,10 +147,6 @@ func (o *Instrument) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextE
 
 // doBeforeDeleteHooks executes all "before Delete" hooks.
 func (o *Instrument) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
 	for _, hook := range instrumentBeforeDeleteHooks {
 		if err := hook(ctx, exec, o); err != nil {
 			return err
@@ -224,10 +158,6 @@ func (o *Instrument) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextE
 
 // doBeforeUpsertHooks executes all "before Upsert" hooks.
 func (o *Instrument) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
 	for _, hook := range instrumentBeforeUpsertHooks {
 		if err := hook(ctx, exec, o); err != nil {
 			return err
@@ -239,10 +169,6 @@ func (o *Instrument) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextE
 
 // doAfterInsertHooks executes all "after Insert" hooks.
 func (o *Instrument) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
 	for _, hook := range instrumentAfterInsertHooks {
 		if err := hook(ctx, exec, o); err != nil {
 			return err
@@ -254,10 +180,6 @@ func (o *Instrument) doAfterInsertHooks(ctx context.Context, exec boil.ContextEx
 
 // doAfterSelectHooks executes all "after Select" hooks.
 func (o *Instrument) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
 	for _, hook := range instrumentAfterSelectHooks {
 		if err := hook(ctx, exec, o); err != nil {
 			return err
@@ -269,10 +191,6 @@ func (o *Instrument) doAfterSelectHooks(ctx context.Context, exec boil.ContextEx
 
 // doAfterUpdateHooks executes all "after Update" hooks.
 func (o *Instrument) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
 	for _, hook := range instrumentAfterUpdateHooks {
 		if err := hook(ctx, exec, o); err != nil {
 			return err
@@ -284,10 +202,6 @@ func (o *Instrument) doAfterUpdateHooks(ctx context.Context, exec boil.ContextEx
 
 // doAfterDeleteHooks executes all "after Delete" hooks.
 func (o *Instrument) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
 	for _, hook := range instrumentAfterDeleteHooks {
 		if err := hook(ctx, exec, o); err != nil {
 			return err
@@ -299,10 +213,6 @@ func (o *Instrument) doAfterDeleteHooks(ctx context.Context, exec boil.ContextEx
 
 // doAfterUpsertHooks executes all "after Upsert" hooks.
 func (o *Instrument) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
 	for _, hook := range instrumentAfterUpsertHooks {
 		if err := hook(ctx, exec, o); err != nil {
 			return err
@@ -494,10 +404,6 @@ func (instrumentL) LoadCreator(ctx context.Context, e boil.ContextExecutor, sing
 		}
 	}
 
-	if len(args) == 0 {
-		return nil
-	}
-
 	query := NewQuery(qm.From(`users`), qm.WhereIn(`id in ?`, args...))
 	if mods != nil {
 		mods.Apply(query)
@@ -595,10 +501,6 @@ func (instrumentL) LoadOrganization(ctx context.Context, e boil.ContextExecutor,
 		}
 	}
 
-	if len(args) == 0 {
-		return nil
-	}
-
 	query := NewQuery(qm.From(`organizations`), qm.WhereIn(`id in ?`, args...))
 	if mods != nil {
 		mods.Apply(query)
@@ -692,10 +594,6 @@ func (instrumentL) LoadSounds(ctx context.Context, e boil.ContextExecutor, singu
 
 			args = append(args, obj.ID)
 		}
-	}
-
-	if len(args) == 0 {
-		return nil
 	}
 
 	query := NewQuery(qm.From(`sounds`), qm.WhereIn(`instrument_id in ?`, args...))
@@ -1011,15 +909,13 @@ func (o *Instrument) Insert(ctx context.Context, exec boil.ContextExecutor, colu
 	}
 
 	var err error
-	if !boil.TimestampsAreSkipped(ctx) {
-		currTime := time.Now().In(boil.GetLocation())
+	currTime := time.Now().In(boil.GetLocation())
 
-		if queries.MustTime(o.CreatedAt).IsZero() {
-			queries.SetScanner(&o.CreatedAt, currTime)
-		}
-		if queries.MustTime(o.UpdatedAt).IsZero() {
-			queries.SetScanner(&o.UpdatedAt, currTime)
-		}
+	if queries.MustTime(o.CreatedAt).IsZero() {
+		queries.SetScanner(&o.CreatedAt, currTime)
+	}
+	if queries.MustTime(o.UpdatedAt).IsZero() {
+		queries.SetScanner(&o.UpdatedAt, currTime)
 	}
 
 	if err := o.doBeforeInsertHooks(ctx, exec); err != nil {
@@ -1095,11 +991,9 @@ func (o *Instrument) Insert(ctx context.Context, exec boil.ContextExecutor, colu
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
 func (o *Instrument) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
-	if !boil.TimestampsAreSkipped(ctx) {
-		currTime := time.Now().In(boil.GetLocation())
+	currTime := time.Now().In(boil.GetLocation())
 
-		queries.SetScanner(&o.UpdatedAt, currTime)
-	}
+	queries.SetScanner(&o.UpdatedAt, currTime)
 
 	var err error
 	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
@@ -1231,14 +1125,12 @@ func (o *Instrument) Upsert(ctx context.Context, exec boil.ContextExecutor, upda
 	if o == nil {
 		return errors.New("models: no instruments provided for upsert")
 	}
-	if !boil.TimestampsAreSkipped(ctx) {
-		currTime := time.Now().In(boil.GetLocation())
+	currTime := time.Now().In(boil.GetLocation())
 
-		if queries.MustTime(o.CreatedAt).IsZero() {
-			queries.SetScanner(&o.CreatedAt, currTime)
-		}
-		queries.SetScanner(&o.UpdatedAt, currTime)
+	if queries.MustTime(o.CreatedAt).IsZero() {
+		queries.SetScanner(&o.CreatedAt, currTime)
 	}
+	queries.SetScanner(&o.UpdatedAt, currTime)
 
 	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
 		return err
@@ -1292,7 +1184,7 @@ func (o *Instrument) Upsert(ctx context.Context, exec boil.ContextExecutor, upda
 			instrumentPrimaryKeyColumns,
 		)
 
-		if updateOnConflict && len(update) == 0 {
+		if len(update) == 0 {
 			return errors.New("models: unable to upsert instruments, could not build update column list")
 		}
 

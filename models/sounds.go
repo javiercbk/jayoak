@@ -18,33 +18,31 @@ import (
 	"github.com/volatiletech/sqlboiler/boil"
 	"github.com/volatiletech/sqlboiler/queries"
 	"github.com/volatiletech/sqlboiler/queries/qm"
-	"github.com/volatiletech/sqlboiler/queries/qmhelper"
 	"github.com/volatiletech/sqlboiler/strmangle"
 	"github.com/volatiletech/sqlboiler/types"
 )
 
 // Sound is an object representing the database table.
 type Sound struct {
-	ID             int64              `boil:"id" json:"id" toml:"id" yaml:"id"`
-	Name           null.String        `boil:"name" json:"name,omitempty" toml:"name" yaml:"name,omitempty"`
-	AudioFileName  string             `boil:"audio_file_name" json:"audioFileName" toml:"audioFileName" yaml:"audioFileName"`
-	AudioUUID      string             `boil:"audio_uuid" json:"audioUUID" toml:"audioUUID" yaml:"audioUUID"`
-	MimeType       string             `boil:"mime_type" json:"mimeType" toml:"mimeType" yaml:"mimeType"`
-	MD5File        string             `boil:"md5_file" json:"md5File" toml:"md5File" yaml:"md5File"`
-	InstrumentID   null.Int64         `boil:"instrument_id" json:"instrumentID,omitempty" toml:"instrumentID" yaml:"instrumentID,omitempty"`
-	Note           null.String        `boil:"note" json:"note,omitempty" toml:"note" yaml:"note,omitempty"`
-	FrequenciesArr types.DecimalArray `boil:"frequencies_arr" json:"frequenciesArr,omitempty" toml:"frequenciesArr" yaml:"frequenciesArr,omitempty"`
-	MaxFrequency   types.NullDecimal  `boil:"max_frequency" json:"maxFrequency,omitempty" toml:"maxFrequency" yaml:"maxFrequency,omitempty"`
-	MinFrequency   types.NullDecimal  `boil:"min_frequency" json:"minFrequency,omitempty" toml:"minFrequency" yaml:"minFrequency,omitempty"`
-	MaxPowerFreq   types.NullDecimal  `boil:"max_power_freq" json:"maxPowerFreq,omitempty" toml:"maxPowerFreq" yaml:"maxPowerFreq,omitempty"`
-	MaxPowerValue  types.NullDecimal  `boil:"max_power_value" json:"maxPowerValue,omitempty" toml:"maxPowerValue" yaml:"maxPowerValue,omitempty"`
-	OrganizationID int64              `boil:"organization_id" json:"organizationID" toml:"organizationID" yaml:"organizationID"`
-	CreatorID      int64              `boil:"creator_id" json:"creatorID" toml:"creatorID" yaml:"creatorID"`
-	ProcessedAt    null.Time          `boil:"processed_at" json:"processedAt,omitempty" toml:"processedAt" yaml:"processedAt,omitempty"`
-	CreatedAt      null.Time          `boil:"created_at" json:"createdAt,omitempty" toml:"createdAt" yaml:"createdAt,omitempty"`
-	UpdatedAt      null.Time          `boil:"updated_at" json:"updatedAt,omitempty" toml:"updatedAt" yaml:"updatedAt,omitempty"`
-	R              *soundR            `boil:"-" json:"-" toml:"-" yaml:"-"`
-	L              soundL             `boil:"-" json:"-" toml:"-" yaml:"-"`
+	ID             int64             `boil:"id" json:"id" toml:"id" yaml:"id"`
+	Name           null.String       `boil:"name" json:"name,omitempty" toml:"name" yaml:"name,omitempty"`
+	AudioFileName  string            `boil:"audio_file_name" json:"audioFileName" toml:"audioFileName" yaml:"audioFileName"`
+	AudioUUID      string            `boil:"audio_uuid" json:"audioUUID" toml:"audioUUID" yaml:"audioUUID"`
+	MimeType       string            `boil:"mime_type" json:"mimeType" toml:"mimeType" yaml:"mimeType"`
+	MD5File        string            `boil:"md5_file" json:"md5File" toml:"md5File" yaml:"md5File"`
+	InstrumentID   null.Int64        `boil:"instrument_id" json:"instrumentID,omitempty" toml:"instrumentID" yaml:"instrumentID,omitempty"`
+	Note           null.String       `boil:"note" json:"note,omitempty" toml:"note" yaml:"note,omitempty"`
+	MaxFrequency   types.NullDecimal `boil:"max_frequency" json:"maxFrequency,omitempty" toml:"maxFrequency" yaml:"maxFrequency,omitempty"`
+	MinFrequency   types.NullDecimal `boil:"min_frequency" json:"minFrequency,omitempty" toml:"minFrequency" yaml:"minFrequency,omitempty"`
+	MaxPowerFreq   types.NullDecimal `boil:"max_power_freq" json:"maxPowerFreq,omitempty" toml:"maxPowerFreq" yaml:"maxPowerFreq,omitempty"`
+	MaxPowerValue  types.NullDecimal `boil:"max_power_value" json:"maxPowerValue,omitempty" toml:"maxPowerValue" yaml:"maxPowerValue,omitempty"`
+	OrganizationID int64             `boil:"organization_id" json:"organizationID" toml:"organizationID" yaml:"organizationID"`
+	CreatorID      int64             `boil:"creator_id" json:"creatorID" toml:"creatorID" yaml:"creatorID"`
+	ProcessedAt    null.Time         `boil:"processed_at" json:"processedAt,omitempty" toml:"processedAt" yaml:"processedAt,omitempty"`
+	CreatedAt      null.Time         `boil:"created_at" json:"createdAt,omitempty" toml:"createdAt" yaml:"createdAt,omitempty"`
+	UpdatedAt      null.Time         `boil:"updated_at" json:"updatedAt,omitempty" toml:"updatedAt" yaml:"updatedAt,omitempty"`
+	R              *soundR           `boil:"-" json:"-" toml:"-" yaml:"-"`
+	L              soundL            `boil:"-" json:"-" toml:"-" yaml:"-"`
 }
 
 var SoundColumns = struct {
@@ -56,7 +54,6 @@ var SoundColumns = struct {
 	MD5File        string
 	InstrumentID   string
 	Note           string
-	FrequenciesArr string
 	MaxFrequency   string
 	MinFrequency   string
 	MaxPowerFreq   string
@@ -75,7 +72,6 @@ var SoundColumns = struct {
 	MD5File:        "md5_file",
 	InstrumentID:   "instrument_id",
 	Note:           "note",
-	FrequenciesArr: "frequencies_arr",
 	MaxFrequency:   "max_frequency",
 	MinFrequency:   "min_frequency",
 	MaxPowerFreq:   "max_power_freq",
@@ -85,142 +81,6 @@ var SoundColumns = struct {
 	ProcessedAt:    "processed_at",
 	CreatedAt:      "created_at",
 	UpdatedAt:      "updated_at",
-}
-
-// Generated where
-
-type whereHelpernull_String struct{ field string }
-
-func (w whereHelpernull_String) EQ(x null.String) qm.QueryMod {
-	return qmhelper.WhereNullEQ(w.field, false, x)
-}
-func (w whereHelpernull_String) NEQ(x null.String) qm.QueryMod {
-	return qmhelper.WhereNullEQ(w.field, true, x)
-}
-func (w whereHelpernull_String) IsNull() qm.QueryMod    { return qmhelper.WhereIsNull(w.field) }
-func (w whereHelpernull_String) IsNotNull() qm.QueryMod { return qmhelper.WhereIsNotNull(w.field) }
-func (w whereHelpernull_String) LT(x null.String) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.LT, x)
-}
-func (w whereHelpernull_String) LTE(x null.String) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.LTE, x)
-}
-func (w whereHelpernull_String) GT(x null.String) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.GT, x)
-}
-func (w whereHelpernull_String) GTE(x null.String) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.GTE, x)
-}
-
-type whereHelpernull_Int64 struct{ field string }
-
-func (w whereHelpernull_Int64) EQ(x null.Int64) qm.QueryMod {
-	return qmhelper.WhereNullEQ(w.field, false, x)
-}
-func (w whereHelpernull_Int64) NEQ(x null.Int64) qm.QueryMod {
-	return qmhelper.WhereNullEQ(w.field, true, x)
-}
-func (w whereHelpernull_Int64) IsNull() qm.QueryMod    { return qmhelper.WhereIsNull(w.field) }
-func (w whereHelpernull_Int64) IsNotNull() qm.QueryMod { return qmhelper.WhereIsNotNull(w.field) }
-func (w whereHelpernull_Int64) LT(x null.Int64) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.LT, x)
-}
-func (w whereHelpernull_Int64) LTE(x null.Int64) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.LTE, x)
-}
-func (w whereHelpernull_Int64) GT(x null.Int64) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.GT, x)
-}
-func (w whereHelpernull_Int64) GTE(x null.Int64) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.GTE, x)
-}
-
-type whereHelpertypes_DecimalArray struct{ field string }
-
-func (w whereHelpertypes_DecimalArray) EQ(x types.DecimalArray) qm.QueryMod {
-	return qmhelper.WhereNullEQ(w.field, false, x)
-}
-func (w whereHelpertypes_DecimalArray) NEQ(x types.DecimalArray) qm.QueryMod {
-	return qmhelper.WhereNullEQ(w.field, true, x)
-}
-func (w whereHelpertypes_DecimalArray) IsNull() qm.QueryMod { return qmhelper.WhereIsNull(w.field) }
-func (w whereHelpertypes_DecimalArray) IsNotNull() qm.QueryMod {
-	return qmhelper.WhereIsNotNull(w.field)
-}
-func (w whereHelpertypes_DecimalArray) LT(x types.DecimalArray) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.LT, x)
-}
-func (w whereHelpertypes_DecimalArray) LTE(x types.DecimalArray) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.LTE, x)
-}
-func (w whereHelpertypes_DecimalArray) GT(x types.DecimalArray) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.GT, x)
-}
-func (w whereHelpertypes_DecimalArray) GTE(x types.DecimalArray) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.GTE, x)
-}
-
-type whereHelpertypes_NullDecimal struct{ field string }
-
-func (w whereHelpertypes_NullDecimal) EQ(x types.NullDecimal) qm.QueryMod {
-	return qmhelper.WhereNullEQ(w.field, false, x)
-}
-func (w whereHelpertypes_NullDecimal) NEQ(x types.NullDecimal) qm.QueryMod {
-	return qmhelper.WhereNullEQ(w.field, true, x)
-}
-func (w whereHelpertypes_NullDecimal) IsNull() qm.QueryMod    { return qmhelper.WhereIsNull(w.field) }
-func (w whereHelpertypes_NullDecimal) IsNotNull() qm.QueryMod { return qmhelper.WhereIsNotNull(w.field) }
-func (w whereHelpertypes_NullDecimal) LT(x types.NullDecimal) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.LT, x)
-}
-func (w whereHelpertypes_NullDecimal) LTE(x types.NullDecimal) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.LTE, x)
-}
-func (w whereHelpertypes_NullDecimal) GT(x types.NullDecimal) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.GT, x)
-}
-func (w whereHelpertypes_NullDecimal) GTE(x types.NullDecimal) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.GTE, x)
-}
-
-var SoundWhere = struct {
-	ID             whereHelperint64
-	Name           whereHelpernull_String
-	AudioFileName  whereHelperstring
-	AudioUUID      whereHelperstring
-	MimeType       whereHelperstring
-	MD5File        whereHelperstring
-	InstrumentID   whereHelpernull_Int64
-	Note           whereHelpernull_String
-	FrequenciesArr whereHelpertypes_DecimalArray
-	MaxFrequency   whereHelpertypes_NullDecimal
-	MinFrequency   whereHelpertypes_NullDecimal
-	MaxPowerFreq   whereHelpertypes_NullDecimal
-	MaxPowerValue  whereHelpertypes_NullDecimal
-	OrganizationID whereHelperint64
-	CreatorID      whereHelperint64
-	ProcessedAt    whereHelpernull_Time
-	CreatedAt      whereHelpernull_Time
-	UpdatedAt      whereHelpernull_Time
-}{
-	ID:             whereHelperint64{field: `id`},
-	Name:           whereHelpernull_String{field: `name`},
-	AudioFileName:  whereHelperstring{field: `audio_file_name`},
-	AudioUUID:      whereHelperstring{field: `audio_uuid`},
-	MimeType:       whereHelperstring{field: `mime_type`},
-	MD5File:        whereHelperstring{field: `md5_file`},
-	InstrumentID:   whereHelpernull_Int64{field: `instrument_id`},
-	Note:           whereHelpernull_String{field: `note`},
-	FrequenciesArr: whereHelpertypes_DecimalArray{field: `frequencies_arr`},
-	MaxFrequency:   whereHelpertypes_NullDecimal{field: `max_frequency`},
-	MinFrequency:   whereHelpertypes_NullDecimal{field: `min_frequency`},
-	MaxPowerFreq:   whereHelpertypes_NullDecimal{field: `max_power_freq`},
-	MaxPowerValue:  whereHelpertypes_NullDecimal{field: `max_power_value`},
-	OrganizationID: whereHelperint64{field: `organization_id`},
-	CreatorID:      whereHelperint64{field: `creator_id`},
-	ProcessedAt:    whereHelpernull_Time{field: `processed_at`},
-	CreatedAt:      whereHelpernull_Time{field: `created_at`},
-	UpdatedAt:      whereHelpernull_Time{field: `updated_at`},
 }
 
 // SoundRels is where relationship names are stored.
@@ -253,8 +113,8 @@ func (*soundR) NewStruct() *soundR {
 type soundL struct{}
 
 var (
-	soundColumns               = []string{"id", "name", "audio_file_name", "audio_uuid", "mime_type", "md5_file", "instrument_id", "note", "frequencies_arr", "max_frequency", "min_frequency", "max_power_freq", "max_power_value", "organization_id", "creator_id", "processed_at", "created_at", "updated_at"}
-	soundColumnsWithoutDefault = []string{"name", "audio_file_name", "audio_uuid", "mime_type", "md5_file", "instrument_id", "note", "frequencies_arr", "max_frequency", "min_frequency", "max_power_freq", "max_power_value", "organization_id", "creator_id", "processed_at", "created_at", "updated_at"}
+	soundColumns               = []string{"id", "name", "audio_file_name", "audio_uuid", "mime_type", "md5_file", "instrument_id", "note", "max_frequency", "min_frequency", "max_power_freq", "max_power_value", "organization_id", "creator_id", "processed_at", "created_at", "updated_at"}
+	soundColumnsWithoutDefault = []string{"name", "audio_file_name", "audio_uuid", "mime_type", "md5_file", "instrument_id", "note", "max_frequency", "min_frequency", "max_power_freq", "max_power_value", "organization_id", "creator_id", "processed_at", "created_at", "updated_at"}
 	soundColumnsWithDefault    = []string{"id"}
 	soundPrimaryKeyColumns     = []string{"id"}
 )
@@ -287,9 +147,6 @@ var (
 var (
 	// Force time package dependency for automated UpdatedAt/CreatedAt.
 	_ = time.Second
-	// Force qmhelper dependency for where clause generation (which doesn't
-	// always happen)
-	_ = qmhelper.Where
 )
 
 var soundBeforeInsertHooks []SoundHook
@@ -305,10 +162,6 @@ var soundAfterUpsertHooks []SoundHook
 
 // doBeforeInsertHooks executes all "before insert" hooks.
 func (o *Sound) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
 	for _, hook := range soundBeforeInsertHooks {
 		if err := hook(ctx, exec, o); err != nil {
 			return err
@@ -320,10 +173,6 @@ func (o *Sound) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecut
 
 // doBeforeUpdateHooks executes all "before Update" hooks.
 func (o *Sound) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
 	for _, hook := range soundBeforeUpdateHooks {
 		if err := hook(ctx, exec, o); err != nil {
 			return err
@@ -335,10 +184,6 @@ func (o *Sound) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecut
 
 // doBeforeDeleteHooks executes all "before Delete" hooks.
 func (o *Sound) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
 	for _, hook := range soundBeforeDeleteHooks {
 		if err := hook(ctx, exec, o); err != nil {
 			return err
@@ -350,10 +195,6 @@ func (o *Sound) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecut
 
 // doBeforeUpsertHooks executes all "before Upsert" hooks.
 func (o *Sound) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
 	for _, hook := range soundBeforeUpsertHooks {
 		if err := hook(ctx, exec, o); err != nil {
 			return err
@@ -365,10 +206,6 @@ func (o *Sound) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecut
 
 // doAfterInsertHooks executes all "after Insert" hooks.
 func (o *Sound) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
 	for _, hook := range soundAfterInsertHooks {
 		if err := hook(ctx, exec, o); err != nil {
 			return err
@@ -380,10 +217,6 @@ func (o *Sound) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecuto
 
 // doAfterSelectHooks executes all "after Select" hooks.
 func (o *Sound) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
 	for _, hook := range soundAfterSelectHooks {
 		if err := hook(ctx, exec, o); err != nil {
 			return err
@@ -395,10 +228,6 @@ func (o *Sound) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecuto
 
 // doAfterUpdateHooks executes all "after Update" hooks.
 func (o *Sound) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
 	for _, hook := range soundAfterUpdateHooks {
 		if err := hook(ctx, exec, o); err != nil {
 			return err
@@ -410,10 +239,6 @@ func (o *Sound) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecuto
 
 // doAfterDeleteHooks executes all "after Delete" hooks.
 func (o *Sound) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
 	for _, hook := range soundAfterDeleteHooks {
 		if err := hook(ctx, exec, o); err != nil {
 			return err
@@ -425,10 +250,6 @@ func (o *Sound) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecuto
 
 // doAfterUpsertHooks executes all "after Upsert" hooks.
 func (o *Sound) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
 	for _, hook := range soundAfterUpsertHooks {
 		if err := hook(ctx, exec, o); err != nil {
 			return err
@@ -638,10 +459,6 @@ func (soundL) LoadInstrument(ctx context.Context, e boil.ContextExecutor, singul
 		}
 	}
 
-	if len(args) == 0 {
-		return nil
-	}
-
 	query := NewQuery(qm.From(`instruments`), qm.WhereIn(`id in ?`, args...))
 	if mods != nil {
 		mods.Apply(query)
@@ -737,10 +554,6 @@ func (soundL) LoadCreator(ctx context.Context, e boil.ContextExecutor, singular 
 			args = append(args, obj.CreatorID)
 
 		}
-	}
-
-	if len(args) == 0 {
-		return nil
 	}
 
 	query := NewQuery(qm.From(`users`), qm.WhereIn(`id in ?`, args...))
@@ -840,10 +653,6 @@ func (soundL) LoadOrganization(ctx context.Context, e boil.ContextExecutor, sing
 		}
 	}
 
-	if len(args) == 0 {
-		return nil
-	}
-
 	query := NewQuery(qm.From(`organizations`), qm.WhereIn(`id in ?`, args...))
 	if mods != nil {
 		mods.Apply(query)
@@ -937,10 +746,6 @@ func (soundL) LoadFrequencies(ctx context.Context, e boil.ContextExecutor, singu
 
 			args = append(args, obj.ID)
 		}
-	}
-
-	if len(args) == 0 {
-		return nil
 	}
 
 	query := NewQuery(qm.From(`frequencies`), qm.WhereIn(`sound_id in ?`, args...))
@@ -1264,15 +1069,13 @@ func (o *Sound) Insert(ctx context.Context, exec boil.ContextExecutor, columns b
 	}
 
 	var err error
-	if !boil.TimestampsAreSkipped(ctx) {
-		currTime := time.Now().In(boil.GetLocation())
+	currTime := time.Now().In(boil.GetLocation())
 
-		if queries.MustTime(o.CreatedAt).IsZero() {
-			queries.SetScanner(&o.CreatedAt, currTime)
-		}
-		if queries.MustTime(o.UpdatedAt).IsZero() {
-			queries.SetScanner(&o.UpdatedAt, currTime)
-		}
+	if queries.MustTime(o.CreatedAt).IsZero() {
+		queries.SetScanner(&o.CreatedAt, currTime)
+	}
+	if queries.MustTime(o.UpdatedAt).IsZero() {
+		queries.SetScanner(&o.UpdatedAt, currTime)
 	}
 
 	if err := o.doBeforeInsertHooks(ctx, exec); err != nil {
@@ -1348,11 +1151,9 @@ func (o *Sound) Insert(ctx context.Context, exec boil.ContextExecutor, columns b
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
 func (o *Sound) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
-	if !boil.TimestampsAreSkipped(ctx) {
-		currTime := time.Now().In(boil.GetLocation())
+	currTime := time.Now().In(boil.GetLocation())
 
-		queries.SetScanner(&o.UpdatedAt, currTime)
-	}
+	queries.SetScanner(&o.UpdatedAt, currTime)
 
 	var err error
 	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
@@ -1484,14 +1285,12 @@ func (o *Sound) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnC
 	if o == nil {
 		return errors.New("models: no sounds provided for upsert")
 	}
-	if !boil.TimestampsAreSkipped(ctx) {
-		currTime := time.Now().In(boil.GetLocation())
+	currTime := time.Now().In(boil.GetLocation())
 
-		if queries.MustTime(o.CreatedAt).IsZero() {
-			queries.SetScanner(&o.CreatedAt, currTime)
-		}
-		queries.SetScanner(&o.UpdatedAt, currTime)
+	if queries.MustTime(o.CreatedAt).IsZero() {
+		queries.SetScanner(&o.CreatedAt, currTime)
 	}
+	queries.SetScanner(&o.UpdatedAt, currTime)
 
 	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
 		return err
@@ -1545,7 +1344,7 @@ func (o *Sound) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnC
 			soundPrimaryKeyColumns,
 		)
 
-		if updateOnConflict && len(update) == 0 {
+		if len(update) == 0 {
 			return errors.New("models: unable to upsert sounds, could not build update column list")
 		}
 

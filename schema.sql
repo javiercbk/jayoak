@@ -49,7 +49,6 @@ CREATE TABLE sounds(
     instrument_id BIGINT,
     -- We could insert a variation of a note
     note note,
-    frequencies_arr NUMERIC(16,8) ARRAY,
     max_frequency NUMERIC(6,0),
     min_frequency NUMERIC(6,0),
     max_power_freq NUMERIC(6,0),
