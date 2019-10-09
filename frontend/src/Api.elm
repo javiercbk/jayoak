@@ -1,4 +1,4 @@
-port module Api exposing (Cred, ErrorDetailed, addServerError, application, decodeErrors, delete, get, login, logout, post, put, register, storeCredWith, username, viewerChanges)
+port module Api exposing (Cred, addServerError, application, decodeErrors, delete, get, login, logout, post, put, register, storeCredWith, username, viewerChanges)
 
 {-| This module is responsible for communicating to the Conduit API.
 
@@ -9,7 +9,9 @@ It exposes an opaque Endpoint type which is guaranteed to point to the correct U
 import Api.Endpoint as Endpoint exposing (Endpoint)
 import Browser
 import Browser.Navigation as Nav
-import Http exposing (Body, Expect)
+import Http
+import Http.Detailed
+import Http.Extras
 import Json.Decode as Decode exposing (Decoder, Value, decodeString, field, string)
 import Json.Decode.Pipeline as Pipeline exposing (optional, required)
 import Json.Encode as Encode
@@ -65,84 +67,6 @@ credDecoder =
 
 
 
--- HTTP HELPERS
-
-
-type ErrorDetailed body
-    = BadUrl String
-    | Timeout
-    | NetworkError
-    | BadStatus Http.Metadata body
-    | BadBody Http.Metadata body String
-
-
-
--- convertResponseString : Http.Response String -> Result (ErrorDetailed String) ( Http.Metadata, String )
--- convertResponseString httpResponse =
---     case httpResponse of
---         Http.BadUrl_ url ->
---             Err (BadUrl url)
---         Http.Timeout_ ->
---             Err Timeout
---         Http.NetworkError_ ->
---             Err NetworkError
---         Http.BadStatus_ metadata body ->
---             Err (BadStatus metadata body)
---         Http.GoodStatus_ metadata body ->
---             Ok ( metadata, body )
-
-
-convertResponseStringToJson : Decoder a -> Http.Response String -> Result (ErrorDetailed String) ( Http.Metadata, a )
-convertResponseStringToJson decoder httpResponse =
-    case httpResponse of
-        Http.BadUrl_ url ->
-            Err (BadUrl url)
-
-        Http.Timeout_ ->
-            Err Timeout
-
-        Http.NetworkError_ ->
-            Err NetworkError
-
-        Http.BadStatus_ metadata body ->
-            Err (BadStatus metadata body)
-
-        Http.GoodStatus_ metadata body ->
-            Result.mapError (BadBody metadata body) <|
-                Result.mapError Decode.errorToString
-                    (Decode.decodeString (Decode.map (\res -> ( metadata, res )) decoder) body)
-
-
-
--- convertResponseBytes : Bytes.Decode.Decoder a -> Http.Response Bytes -> Result (ErrorDetailed Bytes) ( Http.Metadata, a )
--- convertResponseBytes decoder httpResponse =
---     case httpResponse of
---         Http.BadUrl_ url ->
---             Err (BadUrl url)
---         Http.Timeout_ ->
---             Err Timeout
---         Http.NetworkError_ ->
---             Err NetworkError
---         Http.BadStatus_ metadata body ->
---             Err (BadStatus metadata body)
---         Http.GoodStatus_ metadata body ->
---             Result.mapError (BadBody metadata body) <|
---                 Result.fromMaybe "Error decoding bytes" <|
---                     Bytes.Decode.decode (Bytes.Decode.map (\res -> ( metadata, res )) decoder) body
-
-
-expectJsonDetailed : (Result (ErrorDetailed String) ( Http.Metadata, a ) -> msg) -> Decoder a -> Http.Expect msg
-expectJsonDetailed msg decoder =
-    Http.expectStringResponse msg (convertResponseStringToJson decoder)
-
-
-
--- expectStringDetailed : (Result (ErrorDetailed String) ( Http.Metadata, String ) -> msg) -> Http.Expect msg
--- expectStringDetailed msg =
---     Http.expectStringResponse msg convertResponseString
--- expectBytesDetailed : (Result (ErrorDetailed Bytes) ( Http.Metadata, a ) -> msg) -> Bytes.Decode.Decoder a -> Http.Expect msg
--- expectBytesDetailed msg decoder =
---     Http.expectBytesResponse msg (convertResponseBytes decoder)
 -- PERSISTENCE
 
 
@@ -242,12 +166,12 @@ storageDecoder viewerDecoder =
 -- HTTP
 
 
-get : Endpoint -> Maybe Cred -> (Result (ErrorDetailed String) ( Http.Metadata, a ) -> a) -> Decoder a -> Cmd a
+get : Endpoint -> Maybe Cred -> (Result (Http.Detailed.Error String) ( Http.Metadata, a ) -> a) -> Decoder a -> Cmd a
 get url maybeCred toMsg decoder =
     Endpoint.request
         { method = "GET"
         , url = url
-        , expect = expectJsonDetailed toMsg decoder
+        , expect = Http.Detailed.expectJson toMsg decoder
         , headers =
             case maybeCred of
                 Just cred ->
@@ -261,12 +185,12 @@ get url maybeCred toMsg decoder =
         }
 
 
-put : Endpoint -> Cred -> Body -> (Result (ErrorDetailed String) ( Http.Metadata, a ) -> a) -> Decoder a -> Cmd a
+put : Endpoint -> Cred -> Http.Body -> (Result (Http.Detailed.Error String) ( Http.Metadata, a ) -> a) -> Decoder a -> Cmd a
 put url cred body toMsg decoder =
     Endpoint.request
         { method = "PUT"
         , url = url
-        , expect = expectJsonDetailed toMsg decoder
+        , expect = Http.Detailed.expectJson toMsg decoder
         , headers = [ credHeader cred ]
         , body = body
         , timeout = Nothing
@@ -274,12 +198,12 @@ put url cred body toMsg decoder =
         }
 
 
-post : Endpoint -> Maybe Cred -> Body -> (Result (ErrorDetailed String) ( Http.Metadata, a ) -> b) -> Decoder a -> Cmd b
+post : Endpoint -> Maybe Cred -> Http.Body -> (Result (Http.Detailed.Error String) ( Http.Metadata, a ) -> b) -> Decoder a -> Cmd b
 post url maybeCred body toMsg decoder =
     Endpoint.request
         { method = "POST"
         , url = url
-        , expect = expectJsonDetailed toMsg decoder
+        , expect = Http.Detailed.expectJson toMsg decoder
         , headers =
             case maybeCred of
                 Just cred ->
@@ -293,12 +217,12 @@ post url maybeCred body toMsg decoder =
         }
 
 
-delete : Endpoint -> Cred -> Body -> (Result (ErrorDetailed String) ( Http.Metadata, a ) -> a) -> Decoder a -> Cmd a
+delete : Endpoint -> Cred -> Http.Body -> (Result (Http.Detailed.Error String) ( Http.Metadata, a ) -> a) -> Decoder a -> Cmd a
 delete url cred body toMsg decoder =
     Endpoint.request
         { method = "DELETE"
         , url = url
-        , expect = expectJsonDetailed toMsg decoder
+        , expect = Http.Detailed.expectJson toMsg decoder
         , headers = [ credHeader cred ]
         , body = body
         , timeout = Nothing
@@ -306,12 +230,12 @@ delete url cred body toMsg decoder =
         }
 
 
-login : Http.Body -> (Result (ErrorDetailed String) ( Http.Metadata, a ) -> a) -> Decoder (Cred -> a) -> Cmd a
+login : Http.Body -> (Result (Http.Detailed.Error String) ( Http.Metadata, a ) -> a) -> Decoder (Cred -> a) -> Cmd a
 login body msg decoder =
     post Endpoint.login Nothing body msg (Decode.field "user" (decoderFromCred decoder))
 
 
-register : Http.Body -> (Result (ErrorDetailed String) ( Http.Metadata, a ) -> a) -> Decoder (Cred -> a) -> Cmd a
+register : Http.Body -> (Result (Http.Detailed.Error String) ( Http.Metadata, a ) -> a) -> Decoder (Cred -> a) -> Cmd a
 register body msg decoder =
     post Endpoint.users Nothing body msg (Decode.field "user" (decoderFromCred decoder))
 
@@ -334,10 +258,10 @@ addServerError list =
 
 {-| Many API endpoints include an "errors" field in their BadStatus responses.
 -}
-decodeErrors : ErrorDetailed String -> List String
+decodeErrors : Http.Detailed.Error String -> List String
 decodeErrors error =
     case error of
-        BadStatus _ body ->
+        Http.Detailed.BadStatus _ body ->
             body
                 |> decodeString (field "errors" errorsDecoder)
                 |> Result.withDefault [ "Server error" ]

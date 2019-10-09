@@ -11,6 +11,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Http
+import Http.Detailed
 import Json.Decode as Decode exposing (Decoder, decodeString, field, string)
 import Json.Decode.Pipeline exposing (optional)
 import Json.Encode as Encode
@@ -84,7 +85,7 @@ view model =
                 [ div [ BulmaHelpers.classList [ Bulma.columns, Bulma.is8Tablet, Bulma.is6Desktop, Bulma.is4Widescreen ] ]
                     [ div [ class Bulma.box ]
                         [ div [ class Bulma.cardContent ]
-                            [ viewForm model.form ]
+                            [ viewForm model ]
                         ]
                     ]
                 ]
@@ -92,12 +93,13 @@ view model =
     }
 
 
-viewForm : Form -> Html Msg
-viewForm form =
+viewForm : Model -> Html Msg
+viewForm model =
     Html.form [ onSubmit SubmittedForm ]
         [ h2 [ BulmaHelpers.classList [ Bulma.title, Bulma.hasTextCentered, Bulma.isSize3 ] ]
             [ text "Please log in" ]
-        , List.map viewProblem model.problems
+
+        -- , List.map viewProblem model.problems
         , div [ class Bulma.field ]
             [ label [ class Bulma.label, for "email" ]
                 [ text "Email address" ]
@@ -113,7 +115,7 @@ viewForm form =
                 []
             ]
         , div [ class Bulma.field ]
-            [ button [ BulmaHelpers.classList [ Bulma.button, Bulma.isMedium, Bulma.isPrimary, Bulma, isFullwidth ], type_ "submit" ]
+            [ button [ BulmaHelpers.classList [ Bulma.button, Bulma.isMedium, Bulma.isPrimary, Bulma.isFullwidth ], type_ "submit" ]
                 [ text "Log in" ]
             ]
         ]
@@ -142,7 +144,7 @@ type Msg
     = SubmittedForm
     | EnteredEmail String
     | EnteredPassword String
-    | CompletedLogin (Result Http.Error Viewer)
+    | CompletedLogin (Result (Http.Detailed.Error String) ( Http.Metadata, Viewer ))
     | GotSession Session
 
 
@@ -153,7 +155,7 @@ update msg model =
             case validate model.form of
                 Ok validForm ->
                     ( { model | problems = [] }
-                    , Http.send CompletedLogin (login validForm)
+                    , CompletedLogin (login validForm)
                     )
 
                 Err problems ->
@@ -167,10 +169,10 @@ update msg model =
         EnteredPassword password ->
             updateForm (\form -> { form | password = password }) model
 
-        CompletedLogin (Api.ErrorDetailed error) ->
+        CompletedLogin (Err detailedError) ->
             let
                 serverErrors =
-                    Api.decodeErrors error
+                    Api.decodeErrors detailedError
                         |> List.map ServerError
             in
             ( { model | problems = List.append model.problems serverErrors }
@@ -280,7 +282,7 @@ trimFields form =
 -- HTTP
 
 
-login : TrimmedForm -> Http.Request Viewer
+login : TrimmedForm -> Cmd Viewer
 login (Trimmed form) =
     let
         user =

@@ -69,13 +69,21 @@ type Msg
     | GotSession Session
 
 
+update : Msg -> Model -> ( Model, Cmd Msg )
+update msg model =
+    ( model, Cmd.none )
 
--- update : Msg -> Model -> ( Model, Cmd Msg )
--- update msg model =
+
+
 -- SUBSCRIPTIONS
--- subscriptions : Model -> Sub Msg
--- subscriptions model =
---     Session.changes GotSession (Session.navKey model.session)
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Session.changes GotSession (Session.navKey model.session)
+
+
+
 -- EXPORT
 
 
