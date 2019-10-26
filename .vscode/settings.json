@@ -1,12 +1,2 @@
 // settings.json
-{
-    "elmLS.elmPath": "./node_modules/.bin/elm",
-    "elmLS.elmFormatPath": "./node_modules/.bin/elm-format",
-    "elmLS.elmTestPath": "./node_modules/.bin/elm-test",
-    "commented.elm.compiler": "./node_modules/.bin/elm",
-    "commented.elm.makeCommand": "./node_modules/.bin/elm make",
-    "commented.elm.formatCommand": "./frontend/node_modules/.bin/elm-format",
-    "[elm]": {
-        "editor.formatOnSave": true
-    }
-}
+{}

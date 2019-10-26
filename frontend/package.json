@@ -1,24 +1,39 @@
 {
   "name": "jayoak-frontend",
-  "private": true,
-  "version": "1.0.0",
-  "description": "[Elm](https://elm-lang.org/) is a programming language that compiles to JavaScript. It is known for its friendly error messages, helping you find issues quickly and refactor large projects with confidence. Elm is also [very fast](https://elm-lang.org/blog/blazing-fast-html-round-two) and [very small](https://elm-lang.org/blog/small-assets-without-the-headache) when compared with React, Angular, Ember, etc.",
-  "main": "index.js",
+  "description": "the frontend for jayoak",
+  "version": "0.0.1",
   "scripts": {
-    "start": "./node_modules/.bin/http-server -d False -i False",
-    "reactor": "./node_modules/.bin/elm reactor",
-    "make": "./node_modules/.bin/elm make src/Main.elm --output dist/elm.js",
-    "build": "./optimize.sh",
-    "test": "./node_modules/.bin/elm-test"
+    "dev": "sapper dev",
+    "build": "sapper build --legacy",
+    "export": "sapper export --legacy",
+    "start": "node __sapper__/build",
+    "cy:run": "cypress run",
+    "cy:open": "cypress open",
+    "test": "run-p --race dev cy:run"
   },
-  "author": "",
-  "license": "ISC",
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.11.2",
+    "bulma": "^0.7.5",
+    "compression": "^1.7.1",
+    "polka": "next",
+    "sirv": "^0.4.0"
+  },
   "devDependencies": {
-    "elm": "^0.19.0-no-deps",
-    "elm-analyse": "^0.16.4",
-    "elm-format": "^0.8.2",
-    "elm-test": "^0.19.0-rev6",
-    "http-server": "^0.11.1",
-    "uglify-js": "^3.6.0"
+    "npm-run-all": "^4.1.5",
+    "sapper": "^0.27.0",
+    "svelte": "^3.0.0",
+    "@babel/core": "^7.0.0",
+    "@babel/plugin-syntax-dynamic-import": "^7.0.0",
+    "@babel/plugin-transform-runtime": "^7.0.0",
+    "@babel/preset-env": "^7.0.0",
+    "@babel/runtime": "^7.0.0",
+    "rollup": "^1.12.0",
+    "rollup-plugin-babel": "^4.0.2",
+    "rollup-plugin-commonjs": "^10.0.0",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-postcss": "^2.0.3",
+    "rollup-plugin-replace": "^2.0.0",
+    "rollup-plugin-svelte": "^5.0.1",
+    "rollup-plugin-terser": "^4.0.4"
   }
 }
